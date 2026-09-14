@@ -1,3 +1,0 @@
-# Dependências do projeto
-# O programa usa apenas a biblioteca padrão do Python com Tkinter.
-# Nenhuma dependência externa é necessária para a execução básica.
