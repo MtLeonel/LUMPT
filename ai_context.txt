@@ -1,0 +1,52 @@
+Guia de contexto do LUMPT
+
+Objetivo do projeto:
+- Criar uma aplicação educativa, simples e funcional para ensinar lógica de programação e conceitos básicos de desenvolvimento.
+- A primeira aba deve ser um "Tradutor de lógica".
+- A aba de cursos deve funcionar como espaço reservado para divulgação futura de empresas, cursos e conteúdos.
+- O projeto deve ser fácil de instalar, simples de usar e compatível com Windows 7+.
+- A estrutura precisa ser organizada por responsabilidade: programa principal, instalador, contexto de IA e testes.
+
+Estrutura atual:
+- O programa principal fica em LUMPT/ e contém o executável principal LUMPT.exe, o pacote Python lumpt/, o ponto de entrada main.py e os arquivos de suporte.
+- A interface principal fica em LUMPT/lumpt/app.py.
+- As abas principais estão em LUMPT/lumpt/views/editor.py, minigames.py, courses.py, free_code.py, credits.py, microcontrollers.py e profile.py.
+- O instalador está em installer/install_lumpt.py e em installer/install_lumpt.cmd.
+- O contexto de IA fica aqui, em ai_context/ai_context.txt, separado do programa e do instalador.
+- Os testes automáticos ficam em tests/test_lumpt_structure.py.
+
+Regras de desenvolvimento:
+- Mantém a linguagem do projeto em português, exceto quando for necessário manter termos técnicos.
+- Priorize simplicidade, estabilidade e instalação em um clique.
+- Evite depender de bibliotecas externas complexas quando não for necessário.
+- Se houver integração futura com IA, e-mail ou banco de dados, deixe esse espaço separado, bem documentado e de fácil expansão.
+- Se houver erros de execução, registre a correção aqui para evitar regressão.
+
+Funcionalidades atuais:
+- Aba Tradutor de lógica com espaço para múltiplas linguagens e integração futura com IA.
+- Aba Código livre com exemplos para Python, JavaScript, C++, Java, C#, Go e Ruby.
+- Aba Mini-games com perguntas e respostas funcionais.
+- Aba Créditos com os nomes dos integrantes e suas funções.
+- Instalador que copia a pasta completa do programa para a máquina do usuário e cria um atalho simples.
+
+Linguagens e bibliotecas suportadas no código livre:
+- Python: print(), requests, numpy, pandas, pygame.
+- JavaScript: console.log(), express, react.
+- C++: iostream, Boost, OpenCV.
+- Java: public class, main, Jackson, Spring Boot.
+- C#: using System, Newtonsoft.Json, EntityFramework.
+- Go: package main, gin, cobra.
+- Ruby: puts, sinatra, nokogiri.
+
+Erros conhecidos e soluções:
+- Problema anterior: o uso de sintaxe incompatível com Python 3.9 causava o erro 'unsupported operand type(s) for |: type and NoneType'. A solução foi substituir o uso por Optional[...] e validar a execução em Python 3.9.
+- Problema anterior: executar apenas um arquivo .exe isolado não era confiável para distribuição. A solução foi usar uma pasta portátil completa com o executável, arquivos internos e suporte de runtime.
+- Problema anterior: alguns ambientes não abriam o app corretamente quando só o executável estava isolado. A solução foi criar um instalador que copia a pasta principal do programa inteira, com o executável e os arquivos auxiliares.
+- Se algum futuro erro aparecer, descreva o sintoma, a causa provável e a correção aplicada aqui.
+
+Próximos aprimoramentos recomendados:
+- Adicionar um bloco de notas ou arquivo de instruções para o futuro modelo de IA.
+- Criar uma área de integração futura para e-mail e banco de dados.
+- Expandir os mini-games com mais níveis e feedback visual.
+- Incluir mais exemplos educativos por linguagem e aprofundar a aba de cursos como área de divulgação.
+- Criar um instalador mais visual e profissional, ainda com fluxo simples de um clique.
