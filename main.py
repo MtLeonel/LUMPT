@@ -11,7 +11,7 @@ def main() -> None:
             raise SystemExit(
                 "Não consegui abrir a interface.\n\n"
                 "Reinstale o Python com Tcl/Tk habilitado ou verifique a instalação do \n"
-                "interprete do Windows."
+                "intérprete do Windows."
             ) from exc
         raise
 
