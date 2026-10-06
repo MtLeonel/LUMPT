@@ -10,10 +10,44 @@ import zipfile
 from pathlib import Path
 from tkinter import BooleanVar, StringVar, filedialog, ttk
 
-# Determinar diretórios
-INSTALLER_DIR = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
-PROJECT_ROOT = INSTALLER_DIR.parent  # Raiz do projeto
-PROGRAM_ROOT = PROJECT_ROOT / "lumpt"  # Pasta do programa está em lumpt/
+
+def _candidate_paths(*parts: str) -> list[Path]:
+    base = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent)).resolve()
+    roots: list[Path] = [base]
+    if base.name == "installer":
+        roots.append(base.parent)
+    else:
+        roots.append(Path(__file__).resolve().parent.parent)
+    result: list[Path] = []
+    for root in roots:
+        for p in parts:
+            result.append(root / p)
+    return result
+
+
+def resolve_source_root() -> Path:
+    if getattr(sys, "_MEIPASS", None):
+        return Path(sys._MEIPASS).resolve()
+    return Path(__file__).resolve().parent.parent
+
+
+def resolve_bundle_dir() -> Path:
+    """Resolve the directory containing the bundled LUMPT package."""
+    source_root = resolve_source_root()
+    candidates = [
+        source_root / "lumpt",
+        source_root / "app" / "lumpt",
+        Path(__file__).resolve().parent / "lumpt",
+        Path(__file__).resolve().parent.parent / "lumpt",
+    ]
+    for candidate in candidates:
+        if candidate.exists() and (candidate / "app.py").exists():
+            return candidate
+    return source_root / "lumpt"
+
+
+SOURCE_ROOT = resolve_source_root()
+APP_BUNDLE_DIR = resolve_bundle_dir()
 DEFAULT_INSTALL_DIR = Path(os.environ.get("LOCALAPPDATA", "")) / "Programs" / "LUMPT"
 DESKTOP_DIR = Path.home() / "Desktop"
 START_MENU_DIR = (
@@ -26,30 +60,32 @@ START_MENU_DIR = (
 )
 
 
-def resolve_bundle_dir() -> Path:
-    """Resolver o diretório do bundle do programa."""
-    # Tentar encontrar a pasta lumpt/ (programa)
-    candidates = [
-        PROJECT_ROOT / "lumpt",
-        INSTALLER_DIR / "lumpt",
-    ]
-    
+def find_first_existing(*candidates: Path) -> Path | None:
     for candidate in candidates:
-        if candidate.exists() and (candidate / "app.py").exists():
+        if candidate.exists():
             return candidate
-    
-    # Fallback: retornar a pasta esperada (será validada em install_app)
-    return PROJECT_ROOT / "lumpt"
+    return None
 
 
-APP_BUNDLE_DIR = resolve_bundle_dir()
-INSTALLER_README_PATH = INSTALLER_DIR.parent / "README.txt"
-AI_CONTEXT_PATH = INSTALLER_DIR.parent / "ai_context" / "ai_context.txt"
-REQUIREMENTS_PATH = PROJECT_ROOT / "requirements.txt"
+INSTALLER_README_PATH = find_first_existing(
+    SOURCE_ROOT / "README.md",
+    SOURCE_ROOT / "README.txt",
+    Path(__file__).resolve().parent.parent / "README.md",
+    Path(__file__).resolve().parent.parent / "README.txt",
+)
+AI_CONTEXT_PATH = find_first_existing(
+    SOURCE_ROOT / "ai_context" / "ai_context.txt",
+    SOURCE_ROOT / "ai_context.txt",
+    Path(__file__).resolve().parent.parent / "ai_context" / "ai_context.txt",
+    Path(__file__).resolve().parent.parent / "ai_context.txt",
+)
+REQUIREMENTS_PATH = find_first_existing(
+    SOURCE_ROOT / "requirements.txt",
+    Path(__file__).resolve().parent.parent / "requirements.txt",
+)
 
 
 def ensure_python_dependency() -> None:
-    """Verificar se Tkinter está disponível."""
     try:
         import tkinter  # noqa: F401
     except ModuleNotFoundError as exc:
@@ -59,12 +95,10 @@ def ensure_python_dependency() -> None:
 
 
 def create_shortcut(target_path: Path, shortcut_path: Path) -> None:
-    """Criar atalho para executável (Windows)."""
     shortcut_path.parent.mkdir(parents=True, exist_ok=True)
     try:
         import win32com.client  # type: ignore
     except ModuleNotFoundError:
-        # Fallback: criar arquivo .cmd se win32com não estiver disponível
         fallback_path = shortcut_path.with_suffix(".cmd")
         fallback_path.write_text(
             "@echo off\n"
@@ -82,31 +116,24 @@ def create_shortcut(target_path: Path, shortcut_path: Path) -> None:
 
 
 def create_desktop_shortcut(target_path: Path) -> None:
-    """Criar atalho na área de trabalho."""
     DESKTOP_DIR.mkdir(parents=True, exist_ok=True)
     create_shortcut(target_path, DESKTOP_DIR / "LUMPT.lnk")
 
 
 def create_start_menu_shortcut(target_path: Path) -> None:
-    """Criar atalho no menu Iniciar."""
     START_MENU_DIR.mkdir(parents=True, exist_ok=True)
     create_shortcut(target_path, START_MENU_DIR / "LUMPT.lnk")
 
 
 def copy_bundle_contents(bundle_dir: Path, install_dir: Path) -> None:
-    """Copiar conteúdo do programa para diretório de instalação."""
     install_dir.mkdir(parents=True, exist_ok=True)
-
-    # Copiar pasta lumpt/ inteira
     lumpt_dest = install_dir / "lumpt"
     if lumpt_dest.exists():
         shutil.rmtree(lumpt_dest)
-    
     shutil.copytree(bundle_dir, lumpt_dest, dirs_exist_ok=True)
 
 
 def create_zip_bundle(install_dir: Path) -> None:
-    """Criar arquivo ZIP do programa para backup/distribuição."""
     archive_path = install_dir / "LUMPT_Instalacao.zip"
     with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         for root, dirs, files in os.walk(install_dir):
@@ -119,41 +146,34 @@ def create_zip_bundle(install_dir: Path) -> None:
 
 
 def install_app(install_dir: Path, create_shortcut_flag: bool) -> None:
-    """Instalar a aplicação LUMPT."""
     if not APP_BUNDLE_DIR.exists():
         raise FileNotFoundError(
             f"A pasta do programa ({APP_BUNDLE_DIR}) não foi encontrada no instalador.\n"
-            "Certifique-se de que a pasta 'lumpt/' existe no diretório do instalador."
+            "Certifique-se de que a pasta 'lumpt/' existe no pacote do instalador."
         )
 
     install_dir.mkdir(parents=True, exist_ok=True)
     copy_bundle_contents(APP_BUNDLE_DIR, install_dir)
 
-    # Copiar arquivos de suporte
-    if INSTALLER_README_PATH.exists():
-        shutil.copy2(INSTALLER_README_PATH, install_dir / "README.txt")
-    if AI_CONTEXT_PATH.exists():
+    if INSTALLER_README_PATH is not None:
+        shutil.copy2(INSTALLER_README_PATH, install_dir / INSTALLER_README_PATH.name)
+    if AI_CONTEXT_PATH is not None:
+        target = install_dir / AI_CONTEXT_PATH.name
         AI_CONTEXT_PATH.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(AI_CONTEXT_PATH, install_dir / "ai_context.txt")
-    if REQUIREMENTS_PATH.exists():
-        shutil.copy2(REQUIREMENTS_PATH, install_dir / "requirements.txt")
+        shutil.copy2(AI_CONTEXT_PATH, target)
+    if REQUIREMENTS_PATH is not None:
+        shutil.copy2(REQUIREMENTS_PATH, install_dir / REQUIREMENTS_PATH.name)
 
-    # Copiar main.py
-    main_py_src = PROJECT_ROOT / "main.py"
-    if main_py_src.exists():
+    main_py_src = find_first_existing(SOURCE_ROOT / "main.py", Path(__file__).resolve().parent.parent / "main.py")
+    if main_py_src is not None:
         shutil.copy2(main_py_src, install_dir / "main.py")
 
-    # Criar launcher
     launcher_path = install_dir / "LUMPT.cmd"
     launcher_path.write_text(
         "@echo off\n"
         "setlocal\n"
         "cd /d \"%~dp0\"\n"
-        "if exist \"%~dp0LUMPT\\LUMPT.exe\" (\n"
-        "  start \"\" \"%~dp0LUMPT\\LUMPT.exe\"\n"
-        ") else (\n"
-        "  python main.py\n"
-        ")\n",
+        "python main.py\n",
         encoding="utf-8",
     )
 
@@ -165,7 +185,6 @@ def install_app(install_dir: Path, create_shortcut_flag: bool) -> None:
 
 
 def parse_args() -> argparse.Namespace:
-    """Parser de argumentos da linha de comando."""
     parser = argparse.ArgumentParser(description="Instalador do LUMPT")
     parser.add_argument("--install-dir", default=None, help="Pasta onde o programa será instalado")
     parser.add_argument("--no-shortcut", action="store_true", help="Não criar atalho na área de trabalho")
@@ -173,9 +192,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def build_gui() -> None:
-    """Construir e exibir interface gráfica do instalador."""
     ensure_python_dependency()
-
     root = tk.Tk()
     root.title("Instalador LUMPT")
     root.geometry("600x360")
@@ -186,7 +203,7 @@ def build_gui() -> None:
     status_var = StringVar(value="Clique em Instalar para colocar o LUMPT no seu computador.")
 
     ttk.Label(root, text="Instalador LUMPT", font=("MS Sans Serif", 14, "bold")).pack(anchor="w", padx=16, pady=(16, 8))
-    ttk.Label(root, text="Este instalador é simples: escolhe uma pasta, instala o programa e cria um atalho na área de trabalho.", wraplength=560).pack(anchor="w", padx=16, pady=(0, 8))
+    ttk.Label(root, text="Este instalador copia o projeto e inicia o LUMPT automaticamente.", wraplength=560).pack(anchor="w", padx=16, pady=(0, 8))
 
     frame = ttk.Frame(root, padding=12)
     frame.pack(fill="both", expand=True)
@@ -212,7 +229,6 @@ def build_gui() -> None:
         if not str(install_dir):
             status_var.set("Selecione uma pasta válida.")
             return
-
         try:
             install_app(install_dir, bool(shortcut_var.get()))
             status_var.set(f"Instalação concluída! O programa ficou em: {install_dir}")
@@ -232,7 +248,6 @@ def build_gui() -> None:
 
 
 def main() -> None:
-    """Função principal: parse argumentos e executa instalação."""
     args = parse_args()
     if args.install_dir or args.no_shortcut:
         install_dir = Path(args.install_dir).expanduser().resolve() if args.install_dir else DEFAULT_INSTALL_DIR
