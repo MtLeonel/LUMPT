@@ -8,12 +8,12 @@ Objetivo do projeto:
 - A estrutura precisa ser organizada por responsabilidade: programa principal, instalador, contexto de IA e testes.
 
 Estrutura atual:
-- O programa principal fica em LUMPT/ e contém o executável principal LUMPT.exe, o pacote Python lumpt/, o ponto de entrada main.py e os arquivos de suporte.
+- O programa principal fica em LUMPT/lumpt/ e contém o pacote Python lumpt/, o ponto de entrada main.py e os arquivos de suporte.
 - A interface principal fica em LUMPT/lumpt/app.py.
 - As abas principais estão em LUMPT/lumpt/views/editor.py, minigames.py, courses.py, free_code.py, credits.py, microcontrollers.py e profile.py.
-- O instalador está em installer/install_lumpt.py e em installer/install_lumpt.cmd.
-- O contexto de IA fica aqui, em ai_context/ai_context.txt, separado do programa e do instalador.
-- Os testes automáticos ficam em tests/test_lumpt_structure.py.
+- O instalador está em LUMPT/installer/install_lumpt.py e em LUMPT/installer/install_lumpt.cmd.
+- O contexto de IA fica em LUMPT/ai_context/ai_context.txt, separado do programa e do instalador.
+- Os testes automáticos ficam em LUMPT/tests/test_lumpt_structure.py.
 
 Regras de desenvolvimento:
 - Mantém a linguagem do projeto em português, exceto quando for necessário manter termos técnicos.
@@ -22,8 +22,15 @@ Regras de desenvolvimento:
 - Se houver integração futura com IA, e-mail ou banco de dados, deixe esse espaço separado, bem documentado e de fácil expansão.
 - Se houver erros de execução, registre a correção aqui para evitar regressão.
 
+Modelo IA obrigatório:
+- O modelo de IA do projeto deve ser o Qwen 1.5B.
+- A integração com IA deve priorizar o uso do Qwen 1.5B na aba de "Tradutor de lógica".
+- O Qwen 1.5B deve ser tratado como o modelo principal para análise, explicação e tradução de lógica de programação.
+- Caso futuramente seja necessário trocar ou atualizar o modelo, esse ajuste deve ser registrado aqui com a justificativa e a compatibilidade do projeto.
+- O uso do Qwen 1.5B deve ser compatível com execução local e leve, sem depender de infraestrutura pesada.
+
 Funcionalidades atuais:
-- Aba Tradutor de lógica com espaço para múltiplas linguagens e integração futura com IA.
+- Aba Tradutor de lógica com espaço para múltiplas linguagens e integração futura com IA, utilizando Qwen 1.5B como referência principal.
 - Aba Código livre com exemplos para Python, JavaScript, C++, Java, C#, Go e Ruby.
 - Aba Mini-games com perguntas e respostas funcionais.
 - Aba Créditos com os nomes dos integrantes e suas funções.
@@ -39,12 +46,15 @@ Linguagens e bibliotecas suportadas no código livre:
 - Ruby: puts, sinatra, nokogiri.
 
 Erros conhecidos e soluções:
-- Problema anterior: o uso de sintaxe incompatível com Python 3.9 causava o erro 'unsupported operand type(s) for |: type and NoneType'. A solução foi substituir o uso por Optional[...] e validar a execução em Python 3.9.
-- Problema anterior: executar apenas um arquivo .exe isolado não era confiável para distribuição. A solução foi usar uma pasta portátil completa com o executável, arquivos internos e suporte de runtime.
-- Problema anterior: alguns ambientes não abriam o app corretamente quando só o executável estava isolado. A solução foi criar um instalador que copia a pasta principal do programa inteira, com o executável e os arquivos auxiliares.
+- Problema anterior: o uso de sintaxe incompatível com Python 3.9 causava o erro 'unsupported operand type(s) for |: type and NoneType'. A solução foi substituir o uso por Optional[...] e valid[...]
+- Problema anterior: executar apenas um arquivo .exe isolado não era confiável para distribuição. A solução foi usar uma pasta portátil completa com o executável, arquivos internos e suporte.
+- Problema anterior: alguns ambientes não abriam o app corretamente quando só o executável estava isolado. A solução foi criar um instalador que copia a pasta principal do programa inteira.
+- CORREÇÃO 14/09/2026: Reestruturado projeto em 4 pastas (lumpt/, installer/, ai_context/, tests/) com todos os módulos implementados. Corrigido string truncada em install_lumpt.py linha 170 e [...]
+- CORREÇÃO 06/10/2026: Implementado sistema de instalador único em arquivo .exe com PyInstaller. Atualizado ai_context.txt para especificar uso do modelo Qwen 1.5B.
 - Se algum futuro erro aparecer, descreva o sintoma, a causa provável e a correção aplicada aqui.
 
 Próximos aprimoramentos recomendados:
+- Integrar o modelo Qwen 1.5B na aba "Tradutor de lógica" para análise de código em tempo real.
 - Adicionar um bloco de notas ou arquivo de instruções para o futuro modelo de IA.
 - Criar uma área de integração futura para e-mail e banco de dados.
 - Expandir os mini-games com mais níveis e feedback visual.
