@@ -1,23 +1,47 @@
 # LUMPT
 
-LUMPT é uma aplicação desktop em Python para aprendizado e prática de programação.
+LUMPT é uma aplicação educativa em Python com interface Tkinter para aprender lógica de programação.
 
-## Instalação rápida
+Estrutura ativa do projeto:
 
-1. Baixe o instalador único em Releases: `LUMPT_Installer.exe`
-2. Execute o arquivo
-3. Escolha a pasta de instalação
-4. O programa instala automaticamente e abre o LUMPT
+```text
+LUMPT/
+├── .gitignore
+├── README.md
+├── requirements.txt
+├── main.py
+├── build_release.py
+├── lumpt/
+│   ├── __init__.py
+│   ├── app.py
+│   └── views/
+├── installer/
+│   ├── install_lumpt.py
+│   └── install_lumpt.cmd
+├── ai_context/
+│   └── ai_context.txt
+├── tests/
+│   └── test_lumpt_structure.py
+└── dist/   (gerado ao empacotar)
+```
 
-## Build do instalador único
+Arquivos antigos e duplicados no nível raiz foram removidos da estrutura ativa e ficam ignorados no `.gitignore`.
 
-No Windows, execute:
+## Executar localmente
+
+```powershell
+python main.py
+```
+
+## Gerar instalador único
+
+No Windows, com Python 3.9+:
 
 ```powershell
 python build_release.py
 ```
 
-Isso gera um instalador único em:
+Isso gera o instalador em:
 
 ```text
 dist\LUMPT_Installer.exe
@@ -26,30 +50,11 @@ dist\LUMPT_Installer.exe
 ## Requisitos
 
 - Windows 10/11
-- Python 3.10+ (somente para build local)
+- Python 3.9+ (somente para build local)
+- Nenhuma dependência externa obrigatória no projeto em execução
 
-## Estrutura mínima
+## Observações
 
-```text
-LUMPT/
-├── README.md
-├── .gitignore
-├── main.py
-├── requirements.txt
-├── build_release.py
-├── lumpt/
-│   ├── __init__.py
-│   ├── app.py
-│   └── views/
-└── installer/
-    └── install_lumpt.py
-```
-
-## Desenvolvimento
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-python main.py
-```
+- O programa usa Tkinter, que acompanha a instalação padrão do Python no Windows.
+- O instalador é pensado para ser simples, em um único arquivo, e instalar o projeto em uma pasta escolhida pelo usuário.
+- O contexto de IA principal está em `ai_context/ai_context.txt` e referencia o modelo `Qwen 1.5B`.

@@ -10,10 +10,11 @@ build/
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Virtual Environment
+# Virtual env
 venv/
 env/
 ENV/
+.venv/
 
 # IDE
 .vscode/
@@ -26,7 +27,16 @@ ENV/
 .DS_Store
 Thumbs.db
 
-# Project specific
-*.exe
+# Project artifacts
+LUMPT.exe
 *.zip
-LUMPT_Instalacao.zip
+*.bak
+
+# Legacy root files that are no longer part of the active structure
+README.txt
+install_lumpt.py
+install_lumpt.cmd
+ai_context.txt
+
+# Generated/packaging
+*.spec
