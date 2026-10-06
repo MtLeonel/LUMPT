@@ -1,4 +1,4 @@
-"""Aba Microcontroladores - Conteúdo educativo sobre microcontroladores."""
+"""Aba Microcontroladores - Simulação e programação de microcontroladores."""
 
 from __future__ import annotations
 
@@ -7,20 +7,20 @@ from tkinter import ttk
 
 
 class MicrocontrollersTab(ttk.Frame):
-    """Aba para conteúdo sobre microcontroladores."""
+    """Aba para microcontroladores e IoT."""
 
-    def __init__(self, parent: tk.Widget) -> None:
-        super().__init__(parent)
+    def __init__(self, parent):
+        super(MicrocontrollersTab, self).__init__(parent)
         self._create_widgets()
 
-    def _create_widgets(self) -> None:
+    def _create_widgets(self):
         """Criar widgets da aba Microcontroladores."""
         title = ttk.Label(self, text="Microcontroladores", font=("Arial", 14, "bold"))
         title.pack(padx=16, pady=(16, 8))
 
         description = ttk.Label(
             self,
-            text="Aprenda sobre programação em microcontroladores e sistemas embarcados.",
+            text="Aprenda a programar microcontroladores e dispositivos IoT.",
             wraplength=500,
         )
         description.pack(padx=16, pady=(0, 16))

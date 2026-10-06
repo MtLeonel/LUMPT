@@ -3,20 +3,19 @@
 from __future__ import annotations
 
 
-def main() -> None:
+def main():
     try:
-        import tkinter  # noqa: F401
+        import tkinter
     except ModuleNotFoundError as exc:
         if exc.name == "tkinter":
             raise SystemExit(
                 "Não consegui abrir a interface.\n\n"
-                "Reinstale o Python com Tcl/Tk habilitado ou verifique a instalação do \n"
+                "Reinstale o Python com Tcl/Tk habilitado ou verifique a instalação do "
                 "intérprete do Windows."
             ) from exc
         raise
 
     from lumpt.app import run
-
     run()
 
 

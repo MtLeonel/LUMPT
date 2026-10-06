@@ -14,22 +14,25 @@ BUILD = ROOT / "build"
 SPEC = ROOT / "build" / "install_lumpt.spec"
 
 
-def run(cmd: list[str]) -> None:
-    print("$", " ".join(cmd))
+def run(cmd):
+    """Execute command."""
+    print("$ " + " ".join(cmd))
     subprocess.run(cmd, check=True)
 
 
-def main() -> None:
-    print("Instalando dependências do empacotamento...")
-    run([sys.executable, "-m", "pip", "install", "pyinstaller"])
+def main():
+    """Build the installer."""
+    print("Instalando PyInstaller...")
+    run([sys.executable, "-m", "pip", "install", "pyinstaller", "-q"])
 
-    print("Removendo artefatos antigos...")
+    print("Limpando artefatos antigos...")
     for path in (DIST, BUILD):
         if path.exists():
             shutil.rmtree(path)
     if SPEC.exists():
         SPEC.unlink()
 
+    print("Gerando instalador...")
     pyinstaller_cmd = [
         sys.executable,
         "-m",
@@ -60,9 +63,11 @@ def main() -> None:
     run(pyinstaller_cmd)
     output = DIST / "LUMPT_Installer.exe"
     if output.exists():
-        print(f"Instalador pronto: {output}")
+        print("\n✓ Instalador gerado com sucesso!")
+        print("  Arquivo: {}".format(str(output)))
+        print("  Tamanho: {:.2f} MB".format(output.stat().st_size / (1024 * 1024)))
     else:
-        raise FileNotFoundError(f"Arquivo não encontrado após build: {output}")
+        raise FileNotFoundError("Arquivo não encontrado: {}".format(str(output)))
 
 
 if __name__ == "__main__":

@@ -19,11 +19,11 @@ class FreeCodeTab(ttk.Frame):
         "Ruby": 'puts "Olá, Mundo!"',
     }
 
-    def __init__(self, parent: tk.Widget) -> None:
-        super().__init__(parent)
+    def __init__(self, parent):
+        super(FreeCodeTab, self).__init__(parent)
         self._create_widgets()
 
-    def _create_widgets(self) -> None:
+    def _create_widgets(self):
         """Criar widgets da aba Código Livre."""
         title = ttk.Label(self, text="Código Livre", font=("Arial", 14, "bold"))
         title.pack(padx=16, pady=(16, 8))
@@ -35,7 +35,6 @@ class FreeCodeTab(ttk.Frame):
         )
         description.pack(padx=16, pady=(0, 16))
 
-        # Seletor de linguagem
         language_frame = ttk.Frame(self)
         language_frame.pack(padx=16, pady=(0, 8))
 
@@ -52,19 +51,19 @@ class FreeCodeTab(ttk.Frame):
         language_combo.pack(side="left")
         language_combo.bind("<<ComboboxSelected>>", self._update_code)
 
-        # Exibição de código
         code_frame = ttk.LabelFrame(self, text="Exemplo", padding=12)
         code_frame.pack(fill="both", expand=True, padx=16, pady=8)
 
         self.code_text = tk.Text(code_frame, height=15, width=60)
         self.code_text.pack(fill="both", expand=True)
-        
+
         self._update_code()
 
-    def _update_code(self, *args) -> None:
+    def _update_code(self, *args):
         """Atualizar código exibido conforme linguagem selecionada."""
         language = self.language_var.get()
         code = self.LANGUAGE_EXAMPLES.get(language, "")
+        self.code_text.config(state="normal")
         self.code_text.delete("1.0", "end")
         self.code_text.insert("1.0", code)
         self.code_text.config(state="disabled")
