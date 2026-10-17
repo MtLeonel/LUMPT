@@ -3,6 +3,8 @@ on:
   workflow_dispatch:
   push:
     branches: [lumpt-apk-build]
+permissions:
+  contents: write
 jobs:
   apk:
     runs-on: ubuntu-latest
@@ -21,3 +23,9 @@ jobs:
         with:
           name: lumpt-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
+      - name: Publicar APK na branch lumpt-apk-out
+        run: |
+          mkdir -p /tmp/out && cp android/app/build/outputs/apk/debug/app-debug.apk /tmp/out/Lumpt.apk
+          git config user.name "github-actions"; git config user.email "actions@github.com"
+          git checkout --orphan lumpt-apk-out && git rm -rfq . && cp /tmp/out/Lumpt.apk . && git add Lumpt.apk
+          git commit -qm "APK do Lumpt" && git push -f origin lumpt-apk-out
