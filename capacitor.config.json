@@ -1,0 +1,7 @@
+{
+  "appId": "br.lumpt.app",
+  "appName": "Lumpt",
+  "webDir": "www",
+  "backgroundColor": "#080B12",
+  "android": { "allowMixedContent": false }
+}

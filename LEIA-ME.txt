@@ -1,0 +1,30 @@
+LUMPT - projeto para gerar o app Android (APK)
+
+Este projeto empacota o Lumpt (www/index.html, arquivo único que funciona offline)
+com o Capacitor. Ele NÃO foi compilado aqui: gerar o APK exige o Android SDK.
+
+Precisa de: Node.js 18+, JDK 17 e Android Studio (ou só o SDK de linha de comando).
+
+1. npm install
+2. npx cap add android
+3. npx cap sync android
+4. npx cap open android   (abre o Android Studio)
+5. No Android Studio: Build > Build Bundle(s) / APK(s) > Build APK(s)
+   O arquivo fica em android/app/build/outputs/apk/debug/app-debug.apk
+
+Instalar no celular: copie o .apk, abra no aparelho e permita
+"instalar apps de fontes desconhecidas" quando o Android pedir.
+Para publicar na Play Store é preciso gerar um APK/AAB assinado.
+
+Para trocar o ícone: substitua os arquivos em android/app/src/main/res/mipmap-*
+(a logo do robô está em www/index.html, embutida; o PNG original é lumpt-head.png).
+
+Observação: o progresso do aluno fica salvo no próprio aparelho (localStorage do WebView).
+
+---------------------------------------------------------------
+SEM INSTALAR NADA NO COMPUTADOR (GitHub Actions)
+1. Crie um repositório novo no GitHub e envie TODO o conteúdo desta pasta
+   (inclusive a pasta oculta .github).
+2. Abra a aba Actions > "Gerar APK do Lumpt" > Run workflow.
+3. Quando terminar (uns 5 a 10 min), baixe "lumpt-apk" na página da execução.
+   Dentro está o app-debug.apk para instalar no celular Android.
